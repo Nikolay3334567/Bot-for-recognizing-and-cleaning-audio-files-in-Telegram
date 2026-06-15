@@ -18,21 +18,31 @@ class DummyWebServer(http.server.SimpleHTTPRequestHandler):
         self.wfile.write("Бот работает!".encode("utf-8"))
 
 def run_dummy_server():
-    # Render сам передает порт в переменную окружения PORT
     port = int(os.environ.get("PORT", 8080))
-    # Разрешаем повторное использование порта
     socketserver.TCPServer.allow_reuse_address = True
     with socketserver.TCPServer(("", port), DummyWebServer) as httpd:
         print(f"Микро-сервер запущен на порту {port}")
         httpd.serve_forever()
 # --------------------------------------------------
 
+
+# === АВТОМАТИЧЕСКОЕ СОЗДАНИЕ ФАЙЛА С КЛЮЧАМИ GOOGLE ===
+google_json = os.environ.get('GOOGLE_APPLICATION_CREDENTIALS_JSON')
+if google_json:
+    # Создаем физический файл на диске сервера из текста в настройках
+    with open('google-creds.json', 'w') as f:
+        f.write(google_json)
+    # Показываем библиотеке Google путь к созданному файлу
+    os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = 'google-creds.json'
+# ======================================================
+
+
 TELEGRAM_BOT_TOKEN = os.environ.get('TELEGRAM_BOT_TOKEN')
 PROJECT_ID = os.environ.get('GOOGLE_CLOUD_PROJECT')
 LOCATION = "us-central1"
 
-os.environ["GOOGLE_CLOUD_PROJECT"] = PROJECT_ID
-credentials, _ = google.auth.default(quota_project_id=PROJECT_ID)
+# Инициализируем авторизацию с использованием нашего созданного файла
+credentials, _ = google.auth.default()
 
 bot = telebot.TeleBot(TELEGRAM_BOT_TOKEN)
 ai_client = genai.Client(vertexai=True, project=PROJECT_ID, location=LOCATION)
@@ -69,9 +79,9 @@ def handle_audio(message):
         bot.reply_to(message, f"Ошибка: {e}")
 
 if __name__ == "__main__":
-    # 1. Сначала запускаем микро-сервер в отдельном потоке
+    # 1. Запускаем микро-сервер, чтобы Render не ругался на порты
     Thread(target=run_dummy_server, daemon=True).start()
     
-    # 2. Затем запускаем самого бота
+    # 2. Запускаем самого бота
     print("Бот запущен...")
     bot.infinity_polling()
