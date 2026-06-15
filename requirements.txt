@@ -1,0 +1,4 @@
+pytelegrambotapi
+google-genai
+google-cloud-text-to-speech
+google-auth
