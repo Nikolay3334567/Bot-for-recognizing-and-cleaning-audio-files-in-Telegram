@@ -1,4 +1,4 @@
 pytelegrambotapi
 google-genai
-google-cloudtexttospeech
+google-cloud-texttospeech
 google-auth
