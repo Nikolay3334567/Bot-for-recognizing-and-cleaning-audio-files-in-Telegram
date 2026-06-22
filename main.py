@@ -41,7 +41,7 @@ if google_json:
 # Читаем настройки из переменных окружения сервера
 TELEGRAM_BOT_TOKEN = os.environ.get('TELEGRAM_BOT_TOKEN')
 PROJECT_ID = os.environ.get('GOOGLE_CLOUD_PROJECT')
-LOCATION = "us-central1"
+LOCATION = "us"
 
 # Инициализируем авторизацию с использованием нашего созданного файла
 credentials, _ = google.auth.default()
