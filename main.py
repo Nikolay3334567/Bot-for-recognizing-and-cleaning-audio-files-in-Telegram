@@ -80,7 +80,7 @@ def process_audio_with_gemini(chat_id, prompt_text):
         return "Ошибка: аудиозапись не найдена в памяти. Отправьте аудио еще раз."
         
     response = ai_client.models.generate_content(
-        model='gemini-2.5-flash',
+        model='gemini-3.5-flash',
         contents=[
             genai_types.Part.from_bytes(
                 data=state['audio_bytes'],
